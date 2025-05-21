@@ -87,9 +87,7 @@ All required packages are listed in the provided `ML-VA-prediction.yml` file. To
   
   `conda activate ML-VA-prediction`
   
-  Then run the script with your data:
-  
-  `python pred_XGBoost.py --X_test data/XTest_5z.mat --model models/xgboost_model.json --metrics --y_test data/yTest_5z.mat`
+  Then run the script with your data like in *Example of use* of this method.
 
 - **From MATLAB (using Python integration):**
 
