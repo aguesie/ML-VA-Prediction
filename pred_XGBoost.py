@@ -126,7 +126,7 @@ def main(args):
     y_pred = np.round(np.round(y_pred / 0.02) * 0.02, 2)
 
     # Save predictions to .mat file to use in MATLAB
-    #scipy.io.savemat("results/y_predXGBoost.mat", {"y_pred": y_pred})
+    scipy.io.savemat("results/y_predXGBoost.mat", {"y_pred": y_pred})
 
     # Optionally evaluate metrics
     if args.metrics:
