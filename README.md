@@ -103,7 +103,6 @@ All required packages are listed in the provided `ML-VA-prediction.yml` file. To
   jsonText = fileread('PythonConfig.json');
   jsonData = jsondecode(jsonText);
   pythonPath = jsonData.PythonExecPath;
-  
   pythonSetUp(pythonPath);
   ```
   This function will automatically detect your OS (Windows/Linux) and set the Python environment via `pyenv`.
