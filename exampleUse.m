@@ -7,26 +7,36 @@ close all
 load('data/XTest_9z_AA.mat');
 load('data/yTest_9z_AA.mat');
 
-yPred_LSBoost = pred_LSBoost(XTest, 'models/modelLSBoost.mat', 'Mdl', false);
+% Case when metrics are not calculated
+% yPred_LSBoost = pred_LSBoost(XTest, 'models/modelLSBoost.mat', 'Mdl', false);
+
+% Case when metrics are calculated
+yPred_LSBoost = pred_LSBoost(XTest, 'models/modelLSBoost.mat', 'Mdl', true, yTest);
+
 yPred_LSBoost_filt = removeOutliers(yTest, yPred_LSBoost);
 
 
 %% -------------------------- XGBOOST PREDICTION --------------------------
 
-% Load data
+% Path of the data to make the prediction
 X_test = 'data/XTest_5z.mat';
 y_test = 'data/yTest_5z.mat';
-load('data/yTest_5z.mat');
+
+% Load matrix for use in romoveOutliers
+load('data/yTest_5z.mat');   
 
 % Prepare python environment
 jsonText = fileread('PythonConfig.json');
 jsonData = jsondecode(jsonText);
-
 pythonPath = jsonData.PythonExecPath;
-
 pythonSetUp(pythonPath);
 
-command = sprintf('python "%s" --X_test "%s" --model "%s"', 'pred_XGBoost.py', X_test, 'models/modelXGBoost.json');
+% Case when metrics are not calculated
+% command = sprintf('python "%s" --X_test "%s" --model "%s"', 'pred_XGBoost.py', X_test, 'models/modelXGBoost.json');
+
+% Case when metrics are not calculated
+command = sprintf('python "%s" --X_test "%s" --model "%s" --metrics --y_test "%s"', 'pred_XGBoost.py', X_test, 'models/modelXGBoost.json', y_test);
+
 system(command);
 
 load('results/y_predXGBoost.mat')  % Load the prediction that was just made
