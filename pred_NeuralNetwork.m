@@ -30,9 +30,9 @@ function VA_pred = pred_NeuralNetwork(Dpup, var_noise, phi, Z, list_age, modelPa
     % ------------------------------- LOAD DATA -------------------------------
     % Load the template with the optotype letters and their VA value
     if num_template == 1
-        template = readtable('data/Optotipos_usados.xlsx', 'Sheet', 'Plantilla 1');
+        template = readtable('data/Templates.xlsx', 'Sheet', 'Template 1');
     elseif num_template == 2
-        template = readtable('data/Optotipos_usados.xlsx', 'Sheet', 'Plantilla 2');
+        template = readtable('data/Templates.xlsx', 'Sheet', 'Template 2');
     end
 
     template.VA = str2double(template.VA);
@@ -47,7 +47,7 @@ function VA_pred = pred_NeuralNetwork(Dpup, var_noise, phi, Z, list_age, modelPa
 
     for i = 1:num_samples
         current_Z = Z(i, :);
-        mkdir('tempFolder');
+        mkdir('tempFolder');  % Create temporary folder
         C = zeros(36, 2);
         C(:, 1) = 0:35;
         C(:, 2) = current_Z';
@@ -56,39 +56,46 @@ function VA_pred = pred_NeuralNetwork(Dpup, var_noise, phi, Z, list_age, modelPa
         total_failures = 0;
 
         for va_logmar = 1:-0.1:-0.3
-            failures = 0;
+            failures = 0;  % Number of failures in a line
             fprintf('Sample %d - testing VA = %.1f\n', i, va_logmar)
-            va = 10^(-va_logmar);
+            va = 10^(-va_logmar);  % Decimal VA
             ind_VA = find(round(template.VA, 4) == round(va_logmar, 4));
             letters = table2array(template(ind_VA, 2:end));
             letters = strjoin(letters, '');
 
             for l = letters
+                % Create the aberrated optotype
                 aberrated_opto = generate_optotype(C, l, va, Dpup, var_noise, age, phi);
                 name = strcat('tempFolder/', l, '_', num2str(phi), '_', num2str(va_logmar), '.png');
                 imwrite(aberrated_opto, name);
 
                 aberrated_opto = imread(name);
                 aberrated_opto = imresize(aberrated_opto, [224 224]);
+
+                % Make classification
                 [pred, score] = classify(net, aberrated_opto);
 
+                % If the confidence is less than 0.65, it's considered not recognized
                 if pred == categorical(1) && score(2) < 0.65
                     pred = categorical(0);
                 end
-
+                
+                % If it's not recognized: one more failure
                 if pred == categorical(0)
                     total_failures = total_failures + 1;
                     failures = failures + 1;
                 end
             end
-            if failures == 5
+            
+            if failures == 5  % If no optotype has been recognized, stop
                 break
             end
         end
+        % Calculate the final VA
         va_final = va_logmar + total_failures * 0.02;
         disp(['Sample ', num2str(i), ' - VA = ', num2str(va_final)])
         VA_pred(i) = va_final;
 
-        rmdir('tempFolder', 's');
+        rmdir('tempFolder', 's');  % Delete temporary folder
     end
 end
