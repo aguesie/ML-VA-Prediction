@@ -135,7 +135,7 @@ The inputs of the function are:
 
 You can also run this example directly from one of the cells in the `exampleUse.m` script, which loads a dataset of Zernike coefficients and ages for 5 subjects, providing a ready-to-run demonstration of the function.
 
-**Requirement:** this function requires MATLAB with the *Deep Learning Toolbox* and access to the optotype templates Excel file (`data/Optotipos_usados.xlsx`) in the appropriate location.
+**Requirement:** this function requires MATLAB with the *Deep Learning Toolbox* and access to the optotype templates Excel file (`data/Templates.xlsx`) in the appropriate location.
 
 ### About `generate_optotype`
 The helper function `generate_optotype.m` creates simulated optotype images using the subject’s Zernike coefficients (wavefront aberrations), pupil diameter, noise variance, age, and a contrast sensitivity scaling factor. The function:
